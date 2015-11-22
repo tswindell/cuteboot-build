@@ -1,5 +1,11 @@
-service cuteboot /usr/bin/cuteboot.sh
+service cuteboot /usr/bin/cutesystemserver
     class main
+    setenv LD_LIBRARY_PATH /usr/lib:/system/lib:/vendor/lib
+    setenv QT_QPA_PLATFORM eglfs
+    setenv QT_QPA_EGLFS_INTEGRATION eglfs_surfaceflinger
+    setenv QT_QPA_EGLFS_HIDECURSOR 1
+    setenv QT_QPA_GENERIC_PLUGINS EvdevTouch
+    setenv QT_QPA_FONTDIR /system/fonts
     onrestart write /sys/android_power/request_state wake
     onrestart write /sys/power/state on
     onrestart restart media

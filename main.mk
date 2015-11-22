@@ -37,8 +37,8 @@ sysroot:
 	mkdir -p sysroot/usr/lib/pkgconfig
 	mkdir -p sysroot/usr/share/pkgconfig
 	mkdir -p sysroot/usr/bin
-	cp build/cuteboot.sh sysroot/usr/bin
-	chmod 0755 sysroot/usr/bin/cuteboot.sh
+	cp build/cuteui.sh sysroot/usr/bin
+	chmod 0755 sysroot/usr/bin/cuteui.sh
 
 qtbase: configure-qtbase 
 	$(MAKE) -C qtbase-build
@@ -137,6 +137,6 @@ img:
 	chmod 777 img/usr/tmp
 	du -s -h img
 	du -s -h img-symbols
-	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M -s -S build/file_contexts cuteboot.img img/usr
-	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M -S build/file_contexts cuteboot-notsparsed.img img/usr
+	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M -s cuteboot.img img/usr
+	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M cuteboot-notsparsed.img img/usr
 	du -s -h cuteboot.img
