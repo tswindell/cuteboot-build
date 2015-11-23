@@ -1,25 +1,20 @@
-# Prerequisites
+# Introduction
 
-You need:
+The cuteboot project aims to provide the ability to replace any normal Android based software installation, with a Qt based platform and user interface. Given a device running Android, and, the factory installed boot.img for your device. You will be able to replace the Android application stack, with a Qt based solution.
+
+# Prerequisites
 
 * An Android device you'd like to "infect" :)
 * A repo-checked out Android tree matching your target device well enough, i.e. same AOSP version/build
 * A repo-checked out cuteboot manifest (see github.com/cuteboot/manifest)
 
-## HW independent part
+# Building
 
-This should be done in your cuteboot tree.
+## Android Sources
 
-```
-$ . build/cbenv.sh
-$ cb_select arm
-$ make -j14
-```
+To build the Qt platform adaptation, we need parts of the Android tree which we link against and/or use. In order for Qt to be able to integrate with the device hardware successfully, we have to build identical, or at least API & ABI compatible versions of these Android components. This is why it is important that you've checked out the correct Android source branch.
 
-## HW dependent part
-
-This should be done in the Android tree.
-
+From within the Android sources:
 ```
 $ . build/envsetup.sh
 $ lunch (and select something suitable to your device (TBD: how?), e.g. aosp-arm-eng)
@@ -29,21 +24,46 @@ $ popd
 $ make -j14 libc libstlport liblog libz libm libdl libui libgui libutils libcutils libEGL libGLESv2 make_ext4fs init mkbootimg su
 ```
 
-In same session, go back to cuteboot and:
+## Cuteboot Platform & Support
+
+You will need to build the base Qt libraries and various supporting libs and tools which compose the platform. This part of the installation is not device dependant, though these parts are built to match the device's CPU architecture.
+
+This should be done from within your cuteboot sources:
+```
+$ . build/cbenv.sh
+$ cb_select arm
+$ make -j14
+```
+
+## Qt Platform Adaptation
+
+Now we build the Qt platform adaptation using the Android build we performed earlier. This part of the platform *is* device dependant, in so much as it is built against the specific Android version for your device.
+
+This should be done from within your cuteboot sources:
 
 ```
 $ make hwdep
+```
+
+## Cuteboot Image
+
+To be able to infect the device with the Qt platform and framework we've just built, we need to generate a flashable image. This image is flashed onto a devices cache partition.
+
+(*Note: By flashing this image to the device, you make the device incapable of booting back to Android without erasing the cache partition.*)
+
+To create the cuteboot platform image, from inside the cuteboot sources run:
+
+```
 $ make cuteboot.img
 ```
 
-You get a fancy sparse image you can flash with:
+Once this is completed, you should have a fancy sparse image you can flash to your device with:
 
 ```
 $ fastboot flash cache cuteboot.img
 ```
 
-
-## boot.img modification
+## Device "boot.img" Modification
 
 Grab a boot.img matching the currently installed software on the device.
 This can be done on a rooted device with extraction of the boot partition
@@ -99,7 +119,9 @@ $ find . -print |cpio -H newc -o |gzip -9 > ../the-ramdisk.gz
 
 and re-make the boot.img using the instructions split_bootimg.pl gave
 
-## flashing the device
+# Installing
+
+## Flashing device with fastboot
 
 ```
 $ fastboot oem unlock
