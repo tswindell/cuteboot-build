@@ -5,14 +5,14 @@ The cuteboot project aims to provide the ability to replace any normal Android b
 # Prerequisites
 
 * An Android device you'd like to "infect" :)
-* A repo-checked out Android tree matching your target device well enough, i.e. same AOSP version/build
+* A repo-checked out Android source tree matching your target device. (Or well enough, i.e. same AOSP version/build)
 * A repo-checked out cuteboot manifest (see github.com/cuteboot/manifest)
 
 # Building
 
 ## Android Sources
 
-To build the Qt platform adaptation, we need parts of the Android tree which we link against and/or use. In order for Qt to be able to integrate with the device hardware successfully, we have to build identical, or at least API & ABI compatible versions of these Android components. This is why it is important that you've checked out the correct Android source branch.
+To build the Qt platform adaptation, we need parts of the Android tree which we link against or use. In order for Qt to be able to integrate with the device hardware successfully, we have to build identical, or at least API & ABI compatible versions of these Android components. This is why it is important that you've checked out the correct Android source branch.
 
 From within the Android sources:
 ```
