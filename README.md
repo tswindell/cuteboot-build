@@ -29,9 +29,11 @@ This should be done in the Android tree.
 In same session, go back to cuteboot and:
 
 * make hwdep
-* make img
+* make cuteboot.img
 
-You get a fancy sparse cuteboot.img you can flash with fastboot cache
+You get a fancy sparse image you can flash with:
+
+$ fastboot flash cache cuteboot.img
 
 
 ## boot.img modification

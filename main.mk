@@ -37,8 +37,6 @@ sysroot:
 	mkdir -p sysroot/usr/lib/pkgconfig
 	mkdir -p sysroot/usr/share/pkgconfig
 	mkdir -p sysroot/usr/bin
-	cp build/cuteui.sh sysroot/usr/bin
-	chmod 0755 sysroot/usr/bin/cuteui.sh
 
 qtbase: configure-qtbase 
 	$(MAKE) -C qtbase-build
@@ -103,40 +101,54 @@ bin/aidl_cpp:
 	mkdir -p $(PWD)/bin ; \
 	cp aidl_cpp $(PWD)/bin
 
-img:
+cuteboot.img-deps: sysroot
+	# Clean build directories
 	rm -rf img img-symbols
 	mkdir -p img img-symbols
+	mkdir -p img/usr/bin
+	install -m 777 -d img/usr/tmp
+	
+	# Copy sysroot content to build directory.
 	cp -ar sysroot/* img
+	cp img/usr/lib/gnu-libstdc++/libgnustl_shared.so img/usr/lib/
+	
 	# Remove bits provided by HW adaptation stack
 	rm -rf img/aosp
 	rm -rf img/usr/include
-	rm -rf img/usr/share/doc
-	rm -rf img/usr/share/man
-	rm -rf img/usr/share/info
 	rm -rf img/usr/lib/*.a
 	rm -rf img/usr/lib/*.o
 	rm -rf img/usr/lib/*.la
 	rm -rf img/usr/lib/*.prl
-	cp img/usr/lib/gnu-libstdc++/libgnustl_shared.so img/usr/lib/
 	rm -rf img/usr/lib/gnu-libstdc++
+	rm -rf img/usr/lib/*android-dependencies.xml
+	rm -rf img/usr/lib/pkgconfig
+	rm -rf img/usr/lib/cmake
 	rm -rf img/usr/share/m4
 	rm -rf img/usr/share/gtk-doc
 	rm -rf img/usr/share/aclocal*
 	rm -rf img/usr/share/gettext
 	rm -rf img/usr/share/emacs
-	rm -rf img/usr/lib/*android-dependencies.xml
-	rm -rf img/usr/lib/pkgconfig
-	rm -rf img/usr/lib/cmake
+	rm -rf img/usr/share/doc
+	rm -rf img/usr/share/man
+	rm -rf img/usr/share/info
+	
+	# Copy build contents for debug
 	cp -ar img img-symbols
 	STRIP=$(CROSS_COMPILE)strip build/strip-shared img
 	STRIP=$(CROSS_COMPILE)strip build/strip-executables img
-	mkdir -p img/usr/bin
-	cp $(ANDROID_PRODUCT_OUT)/system/xbin/su img/usr/bin
-	chmod 4755 img/usr/bin/su
-	mkdir -p img/usr/tmp
-	chmod 777 img/usr/tmp
+	
+	# Install executables
+	install -m 4755 $(ANDROID_PRODUCT_OUT)/system/xbin/su img/usr/bin
 	du -s -h img
 	du -s -h img-symbols
-	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M -s cuteboot.img img/usr
-	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M cuteboot-notsparsed.img img/usr
-	du -s -h cuteboot.img
+
+cuteboot.img: cuteboot.img-deps
+	rm -f $@
+	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M -s $@ img/usr
+	du -s -h $@
+
+cuteboot-nosparse.img: cuteboot.img-deps
+	rm -f $@
+	$(ANDROID_HOST_OUT)/bin/make_ext4fs -l 200M $@ img/usr
+	du -s -h $@
+
