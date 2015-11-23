@@ -138,6 +138,7 @@ cuteboot.img-deps: sysroot
 	STRIP=$(CROSS_COMPILE)strip build/strip-executables img
 	
 	# Install executables
+	install -m 755 build/cuteui.sh sysroot/usr/bin
 	install -m 4755 $(ANDROID_PRODUCT_OUT)/system/xbin/su img/usr/bin
 	du -s -h img
 	du -s -h img-symbols

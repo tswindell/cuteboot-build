@@ -10,3 +10,13 @@ service cuteboot /usr/bin/cutesystemserver
     onrestart write /sys/power/state on
     onrestart restart media
     onrestart restart netd
+    start cuteui
+
+service cuteui /usr/bin/cuteui.sh
+    class main
+    setenv LD_LIBRARY_PATH /usr/lib:/system/lib:/vendor/lib
+    setenv QT_QPA_PLATFORM eglfs
+    setenv QT_QPA_EGLFS_INTEGRATION eglfs_surfaceflinger
+    setenv QT_QPA_EGLFS_HIDECURSOR 1
+    setenv QT_QPA_EGLFS_GENERIC_PLUGINS EvdevTouch
+    setenv QT_QPA_FONTDIR /system/fonts
